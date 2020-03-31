@@ -16,7 +16,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-16.04
     if: github.event.repository.owner.id == github.event.sender.id
 
     steps:
@@ -27,34 +27,29 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         sudo apt-get update
-        sudo apt-get -y install unzip libtool-bin curl cmake gperf gawk flex bison nano xxd \
+        sudo apt-get -y install unzip libtool-bin curl cmake gperf gawk flex bison nano \
         cpio git python-docutils gettext automake autopoint texinfo build-essential help2man \
         pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev gcc-multilib
     - name: Clone source code
       run: |
-        git clone --depth=1 https://github.com/nns2020/rt-n56u.git /opt/rt-n56u
+        git clone --depth=1 https://github.com/nns2020/padavan.git /opt/rt-n56u
         cd /opt/rt-n56u/toolchain-mipsel
-        wget https://github.com/nns2020/byl/raw/master/ubt18/mipsel-linux-uclibc.tar.gz
-        tar -xvf mipsel-linux-uclibc.tar.gz
+        #wget https://github.com/nns2020/byl/raw/master/ubt18/mipsel-linux-uclibc.tar.gz
+        #tar -xvf mipsel-linux-uclibc.tar.gz
         mkdir -p /opt/images/
     - name: Build Firmware
       env:
         TNAME: ac54u_base
       run: |
-        cd /opt/rt-n56u/trunk
-        if [ ! -f configs/templates/$TNAME.config ] ; then
-        echo "configs/templates/$TNAME.config not found "
-        exit 1
-        fi
-        cp -f configs/templates/$TNAME.config .config
         ##############################################################################################
         #因不同型号配置功能不一样，所以先把配置项删除，如果你自己要添加其他的，也要写上删除这一条，切记！！！
-        sudo ./clear_tree
-        sudo ./build_firmware $TNAME
-        sudo mv -f images/*.trx /opt/images/
+        cd /opt/rt-n56u/toolchain-mipsel
+        sudo ./clean_sources
+        sudo ./build_toolchain
+        sudo mv -f /opt/rt-n56u/toolchain-mipsel/toolchain-3.4.x  /opt/images/
     - name : Upload packages
       uses: actions/upload-artifact@master
       if: always()
       with:
-        name: Padavan-packages
+        name: Padavan-tool
         path: /opt/images
