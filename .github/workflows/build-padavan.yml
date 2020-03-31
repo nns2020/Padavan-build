@@ -43,8 +43,9 @@ jobs:
         #因不同型号配置功能不一样，所以先把配置项删除，如果你自己要添加其他的，也要写上删除这一条，切记！！！
         cd /opt/rt-n56u/toolchain-mipsel
         sudo ./clean_sources
+        sudo ./clean_toolchain 
         sudo ./build_toolchain
-        tar zcvf 2.tar.gz /toolchain-3.4.x
+        tar zcvf 2.tar.gz toolchain-3.4.x
         sudo mv -f 2.tar.gz /opt/images/
     - name : Upload packages
       uses: actions/upload-artifact@master
