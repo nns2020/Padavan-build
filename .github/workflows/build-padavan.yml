@@ -44,7 +44,7 @@ jobs:
         cd /opt/rt-n56u/toolchain-mipsel
         sudo ./clean_sources
         sudo ./build_toolchain
-        tar zcvf 1.tar.gz /toolchain-3.4.x
+        tar zcvf 2.tar.gz /toolchain-3.4.x
         sudo mv -f 2.tar.gz /opt/images/
     - name : Upload packages
       uses: actions/upload-artifact@master
