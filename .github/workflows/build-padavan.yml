@@ -27,9 +27,7 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         sudo apt-get update
-        sudo apt-get -y install unzip libtool-bin curl cmake gperf gawk flex bison nano \
-        cpio git python-docutils gettext automake autopoint texinfo build-essential help2man \
-        pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev gcc-multilib
+        sudo apt-get install autopoint autoconf automake bison curl build-essential flex gawk gettext gperf libtool pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev texinfo python-docutils mc cmake unzip nano libncurses5-dev libltdl-dev lrzsz
     - name: Clone source code
       run: |
         git clone --depth=1 https://github.com/nns2020/padavan.git /opt/rt-n56u
@@ -46,8 +44,8 @@ jobs:
         cd /opt/rt-n56u/toolchain-mipsel
         sudo ./clean_sources
         sudo ./build_toolchain
-        tar zcvf 1.tar.gz /opt/rt-n56u/toolchain-mipsel/toolchain-3.4.x
-        sudo mv -f 1.tar.gz /opt/images/
+        tar zcvf 1.tar.gz /toolchain-3.4.x
+        sudo mv -f 2.tar.gz /opt/images/
     - name : Upload packages
       uses: actions/upload-artifact@master
       if: always()
