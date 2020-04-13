@@ -1,5 +1,5 @@
 #修改TNAME: K2P-5.0 中的K2P-5.0为你需要编译的型号，注意名称要与configs/templates/目录下的名字相同
-name: ac54u_base
+name: Build Padavan
 
 on: 
   release:
@@ -27,29 +27,36 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         sudo apt-get update
-        sudo apt-get install autopoint autoconf automake bison curl build-essential flex gawk gettext gperf libtool pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev texinfo python-docutils mc cmake unzip nano libncurses5-dev libltdl-dev lrzsz
+        sudo apt-get -y install unzip libtool-bin curl cmake gperf gawk flex bison nano xxd \
+        cpio git python-docutils gettext automake autopoint texinfo build-essential help2man \
+        pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev gcc-multilib
     - name: Clone source code
       run: |
-        git clone --depth=1 https://github.com/nns2020/padavan.git /opt/rt-n56u
+        git clone --depth=1 https://github.com/hanwckf/rt-n56u.git /opt/rt-n56u
         cd /opt/rt-n56u/toolchain-mipsel
-        #wget https://github.com/nns2020/byl/raw/master/ubt18/mipsel-linux-uclibc.tar.gz
-        #tar -xvf mipsel-linux-uclibc.tar.gz
+        mkdir -p toolchain-3.4.x
+        wget https://github.com/hanwckf/padavan-toolchain/releases/download/v1.1/mipsel-linux-uclibc.tar.xz
+        tar -xvf mipsel-linux-uclibc.tar.xz -C toolchain-3.4.x
         mkdir -p /opt/images/
     - name: Build Firmware
       env:
-        TNAME: ac54u_base
+        TNAME: K2P
       run: |
-        ##############################################################################################
+        cd /opt/rt-n56u/trunk
+        if [ ! -f configs/templates/$TNAME.config ] ; then
+        echo "configs/templates/$TNAME.config not found "
+        exit 1
+        fi
+        cp -f configs/templates/$TNAME.config .config
+        ################################################################################################
         #因不同型号配置功能不一样，所以先把配置项删除，如果你自己要添加其他的，也要写上删除这一条，切记！！！
-        cd /opt/rt-n56u/toolchain-mipsel
-        sudo ./clean_sources
-        sudo ./clean_toolchain 
-        sudo ./build_toolchain
-        tar zcvf 2.tar.gz toolchain-3.4.x
-        sudo mv -f 2.tar.gz /opt/images/
+        ################################################################################################
+        sudo ./clear_tree
+        sudo ./build_firmware_bkye $TNAME
+        sudo mv -f images/*.trx /opt/images/
     - name : Upload packages
       uses: actions/upload-artifact@master
       if: always()
       with:
-        name: Padavan-tool
+        name: Padavan-packages
         path: /opt/images
